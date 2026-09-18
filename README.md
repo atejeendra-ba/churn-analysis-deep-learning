@@ -1,4 +1,4 @@
-# 📊 Churn Analysis & Prediction System
+# 📊 Financial Analytics & Churn Intelligence System
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15.0-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
@@ -6,22 +6,23 @@
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-Preprocessing-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-An **end-to-end Machine Learning and Deep Learning pipeline** designed to predict bank customer churn. This project utilizes an **Artificial Neural Network (ANN)** built with **TensorFlow / Keras** to classify whether a customer is likely to leave the bank (**`Exited = 1`**) or remain active (**`Exited = 0`**).
+An **end-to-end Deep Learning suite** designed to solve two core banking operations using **Artificial Neural Networks (ANN)** built with **TensorFlow / Keras**:
 
-The repository includes complete **data preprocessing**, **categorical encoding**, **feature scaling**, **model training with callbacks**, and an interactive **Streamlit web application** for real-time inference.
+1. **Customer Churn Prediction (Binary Classification):** Classifies whether a customer is likely to leave the bank (`Exited = 1`) or remain active (`Exited = 0`).
+2. **Customer Salary Estimation (Continuous Regression):** Predicts exact customer financial valuation (`EstimatedSalary`) to enable automated credit scoring and wealth management targeting.
+
+The repository includes complete **data preprocessing**, **categorical encoding**, **feature scaling**, **model training with callbacks**, and interactive **Streamlit web applications** for both pipelines.
 
 ---
 
 ## 📌 Project Overview
 
-Customer retention is critical for banking institutions. Predicting customer churn allows banks to take **proactive, data-driven measures** to retain high-risk accounts before they exit.
+### **Dual-Pipeline Scope**
 
-### **Lifecycle Coverage**
-
-* **Data Ingestion & Cleaning:** Ingested and scrubbed customer demographic and financial indicators from `Churn_Modelling.csv`.
-* **Preprocessing Pipeline:** Encoded categorical features and scaled numerical distributions using **Scikit-Learn**, serializing objects via **`pickle`** for production reuse.
-* **Deep Learning Training:** Built, optimized, and monitored a multi-layer Neural Network using **Early Stopping** and **TensorBoard**.
-* **Interactive Deployment:** Shipped an interactive web interface using **Streamlit** to serve real-time predictions.
+* **Classification Engine:** Predicts retention risk using a `Sigmoid` output layer and `Binary Cross-Entropy` loss to allow proactive customer retention.
+* **Regression Engine:** Solves the missing income problem by predicting exact numerical salaries using a linear output layer and `Mean Absolute Error (MAE)` loss.
+* **Shared Preprocessing:** Enforces standardized categorical encoding (`LabelEncoder`, `OneHotEncoder`) and feature scaling (`StandardScaler`) serialized via `pickle` to prevent data drift during live inference.
+* **Monitoring & Callbacks:** Tracks real-time training and validation metrics using **TensorBoard** and controls convergence via **EarlyStopping**.
 
 ---
 
@@ -38,57 +39,36 @@ Customer retention is critical for banking institutions. Predicting customer chu
 
 ---
 
-## ⚙️ Project Architecture & Workflow
+## ⚙️ Project Architecture & Comparison
 
-### 1️⃣ Data Preprocessing & Feature Engineering
-* **Feature Selection:** Dropped non-informative columns (`RowNumber`, `CustomerId`, `Surname`).
-* **Categorical Encoding:**
-  * **Gender:** Transformed using **`LabelEncoder`** into binary indicators.
-  * **Geography:** One-hot encoded using **`OneHotEncoder`** into country flags (*France, Germany, Spain*).
-* **Feature Scaling:** Standardized numerical attributes using **`StandardScaler`** to improve convergence rates during backpropagation.
-* **Artifact Serialization:** Saved **`label_encoder_gender.pkl`**, **`onehot_encoder_geo.pkl`**, and **`scaler.pkl`** to prevent data drift during live inference.
-
----
-
-### 2️⃣ Neural Network Architecture (ANN)
-
-* **Hidden Layers:** Configured with **`ReLU` activation functions** to capture non-linear relationships.
-* **Output Layer:** Single neuron with a **`Sigmoid` activation function** outputting probabilities in the range `[0.0, 1.0]`.
-* **Optimization & Loss:** Compiled with the **Adam Optimizer** (`learning_rate=0.01`) and **`binary_crossentropy`** loss.
-* **Callback Integration:**
-  * **`EarlyStopping`:** Monitored `val_loss` with patience to eliminate overfitting.
-  * **`TensorBoard`:** Captured epoch-level training metrics and parameter histograms.
-
----
-
-### 3️⃣ Model Serialization & Inference Engine
-* Saved the best-performing model weights as **`model.h5`**.
-* Implemented an isolated prediction pipeline that loads serialized preprocessing artifacts and processes new input feature vectors dynamically.
-
----
-
-### 4️⃣ Interactive Web Application (`app.py`)
-* Built an intuitive user interface featuring **interactive sliders** (*Age, Tenure, Products*) and **dropdowns** (*Geography, Gender, Membership Status*).
-* Computes real-time **churn probability percentages** with visual status alerts (**`High Risk`** vs. **`Low Risk`**).
+| Feature | Churn Prediction (`app.py`) | Salary Estimation (`streamlit_regression.py`) |
+| :--- | :--- | :--- |
+| **Task Type** | Binary Classification | Continuous Regression |
+| **Target Variable** | `Exited` (0 or 1) | `EstimatedSalary` ($) |
+| **Output Activation** | `Sigmoid` | Linear / None |
+| **Loss Function** | `binary_crossentropy` | `mean_absolute_error` (MAE) |
+| **Primary Metric** | Accuracy / Loss | Mean Absolute Error (MAE) |
 
 ---
 
 ## 📁 Repository Structure
 
 ```text
-├── logs/                      # TensorBoard execution logs
-│   └── fit/                   # Epoch metrics & execution timestamps
-├── .venv/                     # Virtual environment directory
-├── Churn_Modelling.csv        # Primary bank churn dataset
-├── experiments.ipynb          # Exploratory Data Analysis (EDA) & ANN training
-├── prediction.ipynb           # Model verification & inference testing
-├── app.py                     # Streamlit frontend web application
-├── model.h5                   # Trained TensorFlow/Keras neural network
-├── scaler.pkl                 # Fitted StandardScaler pickle
-├── label_encoder_gender.pkl   # Fitted LabelEncoder for Gender
-├── onehot_encoder_geo.pkl     # Fitted OneHotEncoder for Geography
-├── requirements.txt           # Environment dependency manifest
-└── README.md                  # Project documentation
+├── logs/                         # TensorBoard execution logs (Classification)
+├── regressionlogs/               # TensorBoard execution logs (Regression)
+├── .venv/                        # Virtual environment directory
+├── Churn_Modelling.csv           # Primary bank dataset
+├── experiments.ipynb             # Exploratory Data Analysis & Churn Model training
+├── salaryregression.ipynb        # Data Preprocessing & Salary Model training
+├── app.py                        # Streamlit web app (Churn Classification)
+├── streamlit_regression.py       # Streamlit web app (Salary Regression)
+├── model.h5                      # Trained TensorFlow model weights (Classification)
+├── regression_model.h5           # Trained TensorFlow model weights (Regression)
+├── scaler.pkl                    # Fitted StandardScaler object
+├── label_encoder_gender.pkl     # Fitted LabelEncoder for Gender
+├── onehot_encoder_geo.pkl       # Fitted OneHotEncoder for Geography
+├── requirements.txt             # Environment dependency manifest
+└── README.md                     # Project documentation
 ```
 ---
 
@@ -96,7 +76,7 @@ Customer retention is critical for banking institutions. Predicting customer chu
 
 ### **1. Clone the Repository**
 ```bash
-git clone [https://github.com/https://github.com/atejeendra-ba/Churn-Analysis-Deep-Learning.git](https://github.com/https://github.com/atejeendra-ba/Churn-Analysis-Deep-Learning.git)
+git clone [https://github.com/atejeendra-ba/Churn-Analysis-Deep-Learning.git](https://github.com/atejeendra-ba/Churn-Analysis-Deep-Learning.git)
 cd Churn-Analysis-Deep-Learning
 ```
 ### **2. Set Up Virtual Environment**
@@ -115,11 +95,15 @@ source .venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
-### **4. Launch the Streamlit Web App**
+### **4. Launch the Churn Classification App**
 ```bash
 streamlit run app.py
 ```
-### **5. 📈 Monitoring with TensorBoard**
+### **5. Launch the Salary Regression App**
+```bash
+streamlit run streamlit_regression.py
+```
+### **6. 📈 Monitoring with TensorBoard**
 To view real-time training and validation metrics saved during model execution, run:
 ```bash
 tensorboard --logdir logs/fit
